@@ -7,14 +7,13 @@ import json
 import getpass
 import pbkdf2 as PBKDF2
 from bitcoin import *
-import optparse
 
 from optparse import OptionParser
 
 # Arguments
 
 exodus = '1PiX8AWAHTz5X29M2Rra6mKtm2mKH8EZYX'
-minimum = 0.001
+minimum = 1000000
 
 # Option parsing
 
@@ -100,6 +99,7 @@ def tryopen(f):
     except:
         return None
 
+
 def eth_privtoaddr(priv):
     pub = encode_pubkey(secure_privtopub(priv), 'bin_electrum')
     return sha3(pub)[12:].encode('hex')
@@ -140,10 +140,10 @@ def genwallet(seed, pw):
 def finalize(wallet, unspent, pw):
     seed = getseed(wallet["encseed"], pw, wallet["ethaddr"])
     balance = sum([o["value"] for o in unspent])
-    # if balance == 0:
-    #     raise Exception("No funds in address")
-    # if balance < minimum:
-    #     raise Exception("Insufficient funds. Need at least 0.001 BTC")
+    if balance == 0:
+        raise Exception("No funds in address")
+    if balance < minimum:
+        raise Exception("Insufficient funds. Need at least 0.001 BTC")
     outs = [
         exodus+':'+str(balance - 30000),
         hex_to_b58check(wallet["ethaddr"])+':10000'
@@ -187,7 +187,8 @@ def checkwrite(f, thunk):
         open(f)
         # File already exists
         if not options.overwrite:
-            are_you_sure = raw_input("File "+f+" already exists. Overwrite? (y/n) ")
+            s = "File %s already exists. Overwrite? (y/n) "
+            are_you_sure = raw_input(s % f)
             if are_you_sure not in ['y', 'yes']:
                 sys.exit()
     except:
@@ -199,7 +200,9 @@ def checkwrite(f, thunk):
 w = tryopen(options.wallet)
 b = tryopen(options.backup)
 # Generate new wallet
-if args[0] == 'genwallet':
+if not len(args):
+    pass
+elif args[0] == 'genwallet':
     pw = ask_for_password(True)
     newwal = genwallet(ask_for_seed(), pw)
     checkwrite(options.wallet, lambda: json.dumps(newwal))

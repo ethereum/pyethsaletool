@@ -1,18 +1,19 @@
 #!/usr/bin/python
-import python_sha3
-import aes
-import os
 import sys
-import json
 import pbkdf2 as PBKDF2
-from bitcoin import *
+import bitcoin as b
 
-exodus = '1PiX8AWAHTz5X29M2Rra6mKtm2mKH8EZYX' if len(sys.argv) == 1 else sys.argv[1]
+
+if len(sys.argv) == 1:
+    exodus = sys.argv[1]
+else:
+    exodus = '1PiX8AWAHTz5X29M2Rra6mKtm2mKH8EZYX'
+
 
 def pbkdf2(x):
-    return PBKDF2._pbkdf2(x,x,2000)[:16]
+    return PBKDF2._pbkdf2(x, x, 2000)[:16]
 
-outs = history(exodus)
+outs = b.blockr_unspent(exodus)
 
 txs = {}
 
@@ -20,17 +21,17 @@ for o in outs:
     if o['output'][65:] == '0':
         h = o['output'][:64]
         try:
-            txs[h] = fetchtx(h)
+            txs[h] = b.fetchtx(h)
         except:
-            txs[h] = blockr_fetchtx(h)
+            txs[h] = b.blockr_fetchtx(h)
+
 
 def processtx(txhex):
-        tx = deserialize(txhex)
-        ethaddr = b58check_to_hex(script_to_address(tx['outs'][1]['script']))
-        print "Tx:",h
-        print "Value:",tx['outs'][0]['value']
-        print "Ethereum address:",ethaddr
-    
+        txouts = b.deserialize(txhex)['outs']
+        ethaddr = b.b58check_to_hex(b.script_to_address(txouts[1]['script']))
+        print "Tx:", h
+        print "Value:", txouts[0]['value']
+        print "Ethereum address:", ethaddr
 
 for h in txs:
     txhex = txs[h]
