@@ -1,19 +1,14 @@
 #!/usr/bin/python
-import sys
 import pbkdf2 as PBKDF2
 import bitcoin as b
 
-
-if len(sys.argv) == 1:
-    exodus = sys.argv[1]
-else:
-    exodus = '1PiX8AWAHTz5X29M2Rra6mKtm2mKH8EZYX'
+exodus = '3HE73tDm7q6wHMhCxfThDQFpBX9oq14ZaG'
 
 
 def pbkdf2(x):
     return PBKDF2._pbkdf2(x, x, 2000)[:16]
 
-outs = b.blockr_unspent(exodus)
+outs = b.history(exodus)
 
 txs = {}
 
@@ -27,10 +22,14 @@ for o in outs:
 
 
 def processtx(txhex):
-        txouts = b.deserialize(txhex)['outs']
+    txouts = b.deserialize(txhex)['outs']
+    if txouts[0]['value'] >= 960000 and len(txouts) >= 2:
         ethaddr = b.b58check_to_hex(b.script_to_address(txouts[1]['script']))
+        v = txouts[0]['value'] + 40000
         print "Tx:", h
-        print "Value:", txouts[0]['value']
+        print "Satoshis:", v
+        print "Estimated ETH (min):", v * 1337 / 10**8
+        print "Estimated ETH (max):", v * 2000 / 10**8
         print "Ethereum address:", ethaddr
 
 for h in txs:

@@ -12,7 +12,7 @@ from optparse import OptionParser
 
 # Arguments
 
-exodus = '1PiX8AWAHTz5X29M2Rra6mKtm2mKH8EZYX'
+exodus = '1FxkfJQLJTXpW6QmxGT6oF43ZH959ns8Cq'
 minimum = 1000000
 
 # Option parsing
