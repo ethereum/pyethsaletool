@@ -23,9 +23,9 @@ for o in outs:
 
 def processtx(txhex):
     txouts = b.deserialize(txhex)['outs']
-    if txouts[0]['value'] >= 960000 and len(txouts) >= 2:
+    if txouts[0]['value'] >= 970000 and len(txouts) >= 2:
         ethaddr = b.b58check_to_hex(b.script_to_address(txouts[1]['script']))
-        v = txouts[0]['value'] + 40000
+        v = txouts[0]['value'] + 30000
         print "Tx:", h
         print "Satoshis:", v
         print "Estimated ETH (min):", v * 1337 / 10**8
