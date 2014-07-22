@@ -170,6 +170,28 @@ def finalize(wallet, utxos, pw, addr=None):
     return tx
 
 
+def list_purchases(addr):
+    outs = unspent(hex_to_b58check(addr))
+    txs = {}
+    for o in outs:
+        if o['output'][65:] == '1':
+            h = o['output'][:64]
+            try:
+                txs[h] = fetchtx(h)
+            except:
+                txs[h] = blockr_fetchtx(h)
+    o = []
+    for h in txs:
+        txhex = txs[h]
+        txouts = deserialize(txhex)['outs']
+        if len(txouts) >= 2 and txouts[0]['value'] >= minimum - 30000:
+            addr = script_to_address(txouts[0]['script'])
+            if addr == exodus:
+                v = txouts[0]['value'] + 30000
+                o.append({"tx": h, "value": v})
+    return o
+
+
 def ask_for_password(twice=False):
     if options.pw:
         return pbkdf2(options.pw)
@@ -274,6 +296,19 @@ elif args[0] == 'finalize':
     make_request('https://sale.ethereum.org/sendmail',
                  json.dumps({"tx": tx, "email": w["email"], "emailjson": w}),
                  headers=headers)
+elif args[0] == "list":
+    if len(args) >= 2:
+        addr = args[1]
+    elif w:
+        addr = w["ethaddr"]
+    else:
+        raise Exception("Need to specify an address or wallet")
+    out = list_purchases(addr)
+    for o in out:
+        print "Tx:", o["tx"]
+        print "Satoshis:", o["value"]
+        print "Estimated ETH (min):", o["value"] * 1337 / 10**8
+        print "Estimated ETH (max):", o["value"] * 2000 / 10**8
 # sha3 calculator
 elif args[0] == 'sha3':
     print sha3(sys.argv[2]).encode('hex')
@@ -287,4 +322,6 @@ else:
     print 'Use "python pyethsaletool.py finalize" to finalize the funding process once you have deposited to the intermediate address'
     print 'Use "python pyethsaletool.py finalize 00c40fe2095423509b9fd9b754323158af2310f3" (or some other ethereum address) to purchase directly into some other Ethereum address'
     print 'Use "python pyethsaletool.py recover" to recover the seed if you are missing either your wallet or your password'
+    print 'Use "python pyethsaletool.py list" to list purchases made with your wallet'
+    print 'Use "python pyethsaletool.py list 00c40fe2095423509b9fd9b754323158af2310f3" (or some other ethereum address) to list purchases made into that address'
     print 'Use -s to specify a seed, -w to specify a wallet file and -p to specify a password when creating a wallet. The -w, -b and -p options also work with other commands.'
