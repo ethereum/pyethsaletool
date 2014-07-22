@@ -236,7 +236,13 @@ if args[0] == 'genwallet':
     newwal = genwallet(ask_for_seed(), pw, email)
     checkwrite(options.wallet, lambda: json.dumps(newwal))
     print "Your intermediate Bitcoin address is:", newwal['btcaddr']
+    print " "
     print "Be absolutely sure to keep the wallet safe and backed up, and do not lose your password"
+    print " "
+    print "Also, read the following documents before purchasing:"
+    print " "
+    print "https://www.ethereum.org/pdfs/TermsAndConditionsOfTheEthereumGenesisSale.pdf"
+    print "https://www.ethereum.org/pdfs/EtherProductPurchaseAgreement.pdf"
 # Get wallet Bitcoin address
 elif args[0] == 'getbtcaddress':
     if not w:
