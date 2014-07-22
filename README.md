@@ -1,3 +1,12 @@
+Sale documents:
+
+* [Intended use of revenue](https://www.ethereum.org/pdfs/IntendedUseOfRevenue.pdf)
+* [ĐΞV plan](https://www.ethereum.org/pdfs/%C4%90%CE%9EVPLAN.pdf)
+* [White paper](https://www.ethereum.org/pdfs/EthereumWhitePaper.pdf)
+* [Yellow paper](https://www.ethereum.org/pdfs/EthereumYellowPaper.pdf)
+* [Terms and conditions](https://www.ethereum.org/pdfs/TermsAndConditionsOfTheEthereumGenesisSale.pdf)
+* [Ether Product Purchase Agreement](https://www.ethereum.org/pdfs/EtherProductPurchaseAgreement.pdf)
+
 Notes:
 
 1. Purchase minimum is 0.01 BTC
