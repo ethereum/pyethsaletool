@@ -275,6 +275,8 @@ elif args[0] == 'recover':
         print "Your seed is:", getseed(w['encseed'], pw, w['ethaddr'])
 # Finalize a wallet
 elif args[0] == 'finalize':
+    if not w:
+        raise Exception("Must specify valid wallet file!")
     try:
         u = unspent(w["btcaddr"])
     except:
@@ -295,6 +297,7 @@ elif args[0] == 'finalize':
     else:
         # Finalize into custom address
         tx = finalize(w, u, pw, args[1])
+    print "Pushing: ", tx
     try:
         print pushtx(tx)
     except:
@@ -306,9 +309,15 @@ elif args[0] == 'finalize':
         'Content-Type': 'application/json',
         'Accept': 'application/json, text/plain, */*'
     }
-    make_request('https://sale.ethereum.org/sendmail',
-                 json.dumps({"tx": tx, "email": w["email"], "emailjson": w}),
-                 headers=headers)
+    try:
+        make_request('https://sale.ethereum.org/sendmail',
+                     json.dumps({"tx": tx,
+                                 "email": w["email"],
+                                 "emailjson": w}),
+                     headers=headers)
+    except:
+        print("Tried to send email backup automatically, but failed. "
+              "Please back up your wallet")
 elif args[0] == "list":
     if len(args) >= 2:
         addr = args[1]
