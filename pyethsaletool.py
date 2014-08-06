@@ -235,44 +235,44 @@ if args[0] == 'genwallet':
     email = options.email or raw_input("Please enter email: ")
     newwal = genwallet(ask_for_seed(), pw, email)
     checkwrite(options.wallet, lambda: json.dumps(newwal))
-    print "Your intermediate Bitcoin address is:", newwal['btcaddr']
-    print " "
-    print "Be absolutely sure to keep the wallet safe and backed up, and do not lose your password"
-    print " "
-    print "Also, read the following documents before purchasing:"
-    print " "
-    print "https://www.ethereum.org/pdfs/TermsAndConditionsOfTheEthereumGenesisSale.pdf"
-    print "https://www.ethereum.org/pdfs/EtherProductPurchaseAgreement.pdf"
+    print("Your intermediate Bitcoin address is: %s" % newwal['btcaddr'])
+    print(" ")
+    print("Be absolutely sure to keep the wallet safe and backed up, and do not lose your password")
+    print(" ")
+    print("Also, read the following documents before purchasing:")
+    print(" ")
+    print("https://www.ethereum.org/pdfs/TermsAndConditionsOfTheEthereumGenesisSale.pdf")
+    print("https://www.ethereum.org/pdfs/EtherProductPurchaseAgreement.pdf")
 # Get wallet Bitcoin address
 elif args[0] == 'getbtcaddress':
     if not w:
-        print "Must specify wallet with -w"
-    print w["btcaddr"]
+        print("Must specify wallet with -w")
+    print(w["btcaddr"])
 # Get wallet Ethereum address
 elif args[0] == 'getethaddress':
     if not w:
-        print "Must specify wallet with -w"
-    print w["ethaddr"]
+        print("Must specify wallet with -w")
+    print(w["ethaddr"])
 # Get wallet Bitcoin privkey
 elif args[0] == 'getbtcprivkey':
     pw = ask_for_password()
-    print encode_privkey(sha3(getseed(w['encseed'], pw,
-                         w['ethaddr'])+'\x01'), 'wif')
+    print(encode_privkey(sha3(getseed(w['encseed'], pw,
+                         w['ethaddr'])+'\x01'), 'wif'))
 # Get wallet seed
 elif args[0] == 'getseed':
     pw = ask_for_password()
-    print getseed(w['encseed'], pw, w['ethaddr'])
+    print(getseed(w['encseed'], pw, w['ethaddr']))
 # Get wallet Ethereum privkey
 elif args[0] == 'getethprivkey':
     pw = ask_for_password()
-    print encode_privkey(sha3(getseed(w['encseed'], pw, w['ethaddr'])), 'hex')
+    print(encode_privkey(sha3(getseed(w['encseed'], pw, w['ethaddr'])), 'hex'))
 # Recover wallet seed
 elif args[0] == 'recover':
     if not w:
-        print "Must have wallet file"
+        print("Must have wallet file")
     else:
         pw = ask_for_password()
-        print "Your seed is:", getseed(w['encseed'], pw, w['ethaddr'])
+        print("Your seed is: %s" % getseed(w['encseed'], pw, w['ethaddr']))
 # Finalize a wallet
 elif args[0] == 'finalize':
     if not w:
@@ -287,22 +287,22 @@ elif args[0] == 'finalize':
     pw = ask_for_password()
     confirm = raw_input("Please confirm that you have read and understand the terms and conditions and purchase agreement (Y/N): ")
     if confirm.strip() not in ['y', 'yes', 'Y', 'YES']:
-        print "Aborting. Docs can be found here: "
-        print " "
-        print "https://www.ethereum.org/pdfs/TermsAndConditionsOfTheEthereumGenesisSale.pdf"
-        print "https://www.ethereum.org/pdfs/EtherProductPurchaseAgreement.pdf"
+        print("Aborting. Docs can be found here: ")
+        print(" ")
+        print("https://www.ethereum.org/pdfs/TermsAndConditionsOfTheEthereumGenesisSale.pdf")
+        print("https://www.ethereum.org/pdfs/EtherProductPurchaseAgreement.pdf")
         sys.exit()
     if len(args) == 1:
         tx = finalize(w, u, pw)
     else:
         # Finalize into custom address
         tx = finalize(w, u, pw, args[1])
-    print "Pushing: ", tx
+    print("Pushing: %s" % tx)
     try:
-        print pushtx(tx)
+        print(pushtx(tx))
     except:
         try:
-            print eligius_pushtx(tx)
+            print(eligius_pushtx(tx))
         except:
             raise Exception("Blockchain.info and Eligius both down. Cannot send transaction. Remember that your funds stored in the intermediate address can always be recovered by running './pyethsaletool.py getbtcprivkey' and importing the output into a Bitcoin wallet like blockchain.info")
     headers = {
@@ -327,22 +327,22 @@ elif args[0] == "list":
         raise Exception("Need to specify an address or wallet")
     out = list_purchases(addr)
     for o in out:
-        print "Tx:", o["tx"]
-        print "Satoshis:", o["value"]
-        print "Estimated ETH (min):", o["value"] * 1337 / 10**8
-        print "Estimated ETH (max):", o["value"] * 2000 / 10**8
+        print("Tx: %s" % o["tx"])
+        print("Satoshis: %d" % o["value"])
+        print("Estimated ETH (min): %f" % (o["value"] * 1337 / 10**8))
+        print("Estimated ETH (max): %f" % (o["value"] * 2000 / 10**8))
 # sha3 calculator
 elif args[0] == 'sha3':
-    print sha3(sys.argv[2]).encode('hex')
+    print(sha3(sys.argv[2]).encode('hex'))
 # Help
 else:
-    print 'Use "python pyethsaletool.py genwallet" to generate a wallet'
-    print 'Use "python pyethsaletool.py getbtcaddress" to output the intermediate Bitcoin address you need to send funds to'
-    print 'Use "python pyethsaletool.py getbtcprivkey" to output the private key to your intermediate Bitcoin address'
-    print 'Use "python pyethsaletool.py getethaddress" to output the Ethereum address'
-    print 'Use "python pyethsaletool.py getethprivkey" to output the Ethereum private key'
-    print 'Use "python pyethsaletool.py finalize" to finalize the funding process once you have deposited to the intermediate address'
-    print 'Use "python pyethsaletool.py finalize 00c40fe2095423509b9fd9b754323158af2310f3" (or some other ethereum address) to purchase directly into some other Ethereum address'
-    print 'Use "python pyethsaletool.py list" to list purchases made with your wallet'
-    print 'Use "python pyethsaletool.py list 00c40fe2095423509b9fd9b754323158af2310f3" (or some other ethereum address) to list purchases made into that address'
-    print 'Use -s to specify a seed, -w to specify a wallet file and -p to specify a password when creating a wallet. The -w, -b and -p options also work with other commands.'
+    print('Use "python pyethsaletool.py genwallet" to generate a wallet')
+    print('Use "python pyethsaletool.py getbtcaddress" to output the intermediate Bitcoin address you need to send funds to')
+    print('Use "python pyethsaletool.py getbtcprivkey" to output the private key to your intermediate Bitcoin address')
+    print('Use "python pyethsaletool.py getethaddress" to output the Ethereum address')
+    print('Use "python pyethsaletool.py getethprivkey" to output the Ethereum private key')
+    print('Use "python pyethsaletool.py finalize" to finalize the funding process once you have deposited to the intermediate address')
+    print('Use "python pyethsaletool.py finalize 00c40fe2095423509b9fd9b754323158af2310f3" (or some other ethereum address) to purchase directly into some other Ethereum address')
+    print('Use "python pyethsaletool.py list" to list purchases made with your wallet')
+    print('Use "python pyethsaletool.py list 00c40fe2095423509b9fd9b754323158af2310f3" (or some other ethereum address) to list purchases made into that address')
+    print('Use -s to specify a seed, -w to specify a wallet file and -p to specify a password when creating a wallet. The -w, -b and -p options also work with other commands.')
