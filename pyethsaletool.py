@@ -208,7 +208,7 @@ def ask_for_seed():
         return options.seed
     else:
         # uses pybitcointools' 3-source random generator
-        return random_key().decode('hex')
+        return random_key()
 
 
 def checkwrite(f, thunk):
