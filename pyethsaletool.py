@@ -212,6 +212,7 @@ def ask_for_seed():
 
 
 def checkwrite(f, thunk):
+    exit = False
     try:
         open(f)
         # File already exists
@@ -219,11 +220,14 @@ def checkwrite(f, thunk):
             s = "File %s already exists. Overwrite? (y/n) "
             are_you_sure = raw_input(s % f)
             if are_you_sure not in ['y', 'yes']:
-                sys.exit()
+                exit = True
     except:
         # File does not already exist, we're fine
         pass
-    open(f, 'w').write(thunk())
+    if exit:
+        sys.exit()
+    else:
+        open(f, 'w').write(thunk())
 
 
 w = tryopen(options.wallet)
