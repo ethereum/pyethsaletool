@@ -117,8 +117,12 @@ def evaluate_purchases(purchases):
         else:
             rate = post_rate
         # Round to the nearest finney (nearest ether would be // 10**8)
+        purchase_amount = (p["value"] * rate // 10**5) * 10**15
+        if p["addr"] in o:
+            current_balance = o[p["addr"]]["wei"]
+            purchase_amount = int(current_balance) + purchase_amount
         o[p["addr"]] = {
-            "wei": str((p["value"] * rate // 10**5) * 10**15)
+            "wei": str(purchase_amount)
         }
     return o
 
