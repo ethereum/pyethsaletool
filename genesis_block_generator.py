@@ -104,7 +104,7 @@ def list_purchases(obj):
 
 # Compute ether value from BTC value
 def evaluate_purchases(purchases):
-    o = {}
+    balances = {}
     for p in purchases:
         if p["time"] < start + initial_period:
             rate = initial_rate
@@ -116,10 +116,10 @@ def evaluate_purchases(purchases):
             rate = final_rate
         else:
             rate = post_rate
-        # Round to the nearest finney (nearest ether would be // 10**8)
-        o[p["addr"]] = {
-            "wei": str((p["value"] * rate // 10**5) * 10**15)
-        }
+        # Round to the nearest finney
+        balance_to_add = (p["value"] * rate // 10**5) * 10**15
+        balances[p["addr"]] = balances.get(p["addr"], 0) + balance_to_add
+    o = {k: {"wei": str(v)} for k, v in balances.items()}
     return o
 
 

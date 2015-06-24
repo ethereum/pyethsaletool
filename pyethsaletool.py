@@ -114,10 +114,12 @@ def eth_privtoaddr(priv):
 
 
 def getseed(encseed, pw, ethaddr):
-    seed = aes.decryptData(pw, encseed.decode('hex'))
-    ethpriv = sha3(seed)
-    if eth_privtoaddr(ethpriv) != ethaddr:
-        raise Exception("Ethereum address provided to getseed does not match!")
+    try:
+        seed = aes.decryptData(pw, encseed.decode('hex'))
+        ethpriv = sha3(seed)
+        assert eth_privtoaddr(ethpriv) == ethaddr
+    except:
+        raise Exception("Decryption failed. Bad password?")
     return seed
 
 
@@ -258,15 +260,21 @@ elif args[0] == 'getethaddress':
     print(w["ethaddr"])
 # Get wallet Bitcoin privkey
 elif args[0] == 'getbtcprivkey':
+    if not w:
+        print("Must specify wallet with -w")
     pw = ask_for_password()
     print(encode_privkey(sha3(getseed(w['encseed'], pw,
                          w['ethaddr'])+'\x01'), 'wif'))
 # Get wallet seed
 elif args[0] == 'getseed':
+    if not w:
+        print("Must specify wallet with -w")
     pw = ask_for_password()
     print(getseed(w['encseed'], pw, w['ethaddr']))
 # Get wallet Ethereum privkey
 elif args[0] == 'getethprivkey':
+    if not w:
+        print("Must specify wallet with -w")
     pw = ask_for_password()
     print(encode_privkey(sha3(getseed(w['encseed'], pw, w['ethaddr'])), 'hex'))
 # Recover wallet seed
