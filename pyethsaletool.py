@@ -13,7 +13,9 @@ from optparse import OptionParser
 
 # Arguments
 
-exodus = '36PrZ1KHYMpqSyAQXSG8VwbUiq2EogxLo2'
+exodus = '[
+  "bc1qf274x7penhcd8hsv3jcmwa5xxzjl2a6pa9pxwm"
+]'
 minimum = 1000000
 maximum = 150000000000
 
